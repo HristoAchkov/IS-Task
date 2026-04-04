@@ -1,22 +1,35 @@
+using IS_Task.Core.Interfaces;
+using IS_Task.Core.Services;
 using IS_Task.Data;
+using IS_Task.Extensions;
+using IS_Task.Interfaces;
+using IS_Task.Mappings;
+using IS_Task.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddApplicationDbContext(builder.Configuration);
+builder.Services.AddIdentity<IdentityApplicationUser, IdentityRole<long>>()
+    .AddRoles<IdentityRole<long>>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+builder.Services.AddRazorPages();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IEmailSender, NoOpEmailSender>();
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile<BusinessMapperProfile>();
+});
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
@@ -24,7 +37,6 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -39,5 +51,26 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<long>>>();
+
+    string[] roles = { "Admin", "User" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+            await roleManager.CreateAsync(new IdentityRole<long>(role));
+    }
+
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityApplicationUser>>();
+
+    var user = await userManager.FindByEmailAsync("achkovh@yahoo.com");
+
+    if (user != null)
+        await userManager.AddToRoleAsync(user, "Admin");
+
+}
 
 app.Run();
