@@ -4,6 +4,7 @@ using IS_Task.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IS_Task.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260405095043_MadeCartsUserIdNullableBecauseOfGuestCheckout")]
+    partial class MadeCartsUserIdNullableBecauseOfGuestCheckout
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,6 +39,7 @@ namespace IS_Task.Migrations
                         .HasColumnName("created_at");
 
                     b.Property<string>("SessionToken")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("session_token");
 
