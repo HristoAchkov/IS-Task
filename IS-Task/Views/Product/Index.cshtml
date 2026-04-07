@@ -1,0 +1,113 @@
+﻿@using IS_Task.Models
+@using IS_Task.Shared.Enums
+@model GetAllProductsQueryModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="flex items-center justify-between mb-6">
+    <h1 class="text-3xl font-bold text-gray-900">Products</h1>
+</div>
+
+<form method="get" asp-action="Index" class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-6 flex flex-wrap items-end gap-4">
+    <div class="flex-1 min-w-[180px]">
+        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Category</label>
+        <select name="CategoryId" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+            <option value="">All Categories</option>
+            @foreach (var cat in Model.Categories)
+            {
+                <option value="@cat.Id" selected="@(cat.Id == Model.CategoryId ? "selected" : null)">
+                    @cat.Name
+                </option>
+            }
+        </select>
+    </div>
+
+
+    <input type="hidden" name="CurrentPage" value="1" />
+
+    <div class="flex gap-2">
+        <button type="submit"
+                class="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition shadow-sm">
+            Apply
+        </button>
+        <a asp-action="Index"
+           class="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-600 hover:bg-gray-50 transition">
+            Reset
+        </a>
+    </div>
+</form>
+
+<p class="text-sm text-gray-500 mb-4">
+    Showing @Model.Products.Count() of @Model.TotalProductsCount product(s)
+</p>
+
+@if (!Model.Products.Any())
+{
+    <div class="text-center py-16 text-gray-400">
+        <p class="text-lg">No products found.</p>
+    </div>
+}
+else
+{
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 border-b border-gray-200">
+                <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <th class="px-4 py-3">Name</th>
+                    <th class="px-4 py-3">Description</th>
+                    <th class="px-4 py-3">Price</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                @foreach (var product in Model.Products)
+                {
+                    <tr class="text-gray-700 hover:bg-gray-50 transition">
+                        <td class="px-4 py-3 font-medium">@product.Name</td>
+                        <td class="px-4 py-3 text-gray-500">@product.Description</td>
+                        <td class="px-4 py-3">@product.Price.ToString("C")</td>
+                        <td class="px-4 py-3">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                @product.Status
+                            </span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="flex items-center gap-2">
+                                <a asp-action="Details" asp-route-id="@product.Id"
+                                   class="px-2.5 py-1 rounded text-xs font-medium bg-sky-50 text-sky-700 hover:bg-sky-100 transition">Details</a>
+                                <form asp-controller="Cart" asp-action="AddToCart" method="post" class="inline">
+                                    <input type="hidden" name="productId" value="@product.Id" />
+                                    <button type="submit"
+                                            class="px-2.5 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 transition">
+                                        + Cart
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <div class="flex items-center justify-center gap-1">
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                var isCurrent = i == Model.CurrentPage;
+                <a asp-action="Index"
+                   asp-route-CurrentPage="@i"
+                   asp-route-CategoryId="@Model.CategoryId"
+                   class="@(isCurrent
+                                      ? "px-3 py-1.5 rounded-lg text-sm font-semibold bg-blue-600 text-white shadow-sm"
+                                      : "px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 border border-gray-200 transition")">
+        @i
+    </a>
+        }
+        </div>
+        <p class="text-center text-xs text-gray-400 mt-2">Page @Model.CurrentPage of @Model.TotalPages</p>
+    }
+}

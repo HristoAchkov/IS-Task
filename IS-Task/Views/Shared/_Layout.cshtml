@@ -4,57 +4,58 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - IS_Task</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/IS_Task.styles.css" asp-append-version="true" />
 </head>
-<body>
+<body class="bg-gray-50 min-h-screen flex flex-col">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">IS_Task</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Get All Products</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Category" asp-action="Create">TestCategory</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Category" asp-action="Index">Get All Categories</a>
-                        </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
+        <nav class="bg-white border-b border-gray-200 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center gap-8">
+                        <a class="text-xl font-bold text-gray-900 tracking-tight" asp-area="" asp-controller="Home" asp-action="Index">IS_Task</a>
+                        <div class="hidden sm:flex items-center gap-1">
+                            <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            @if (!User.IsInRole(DataConstants.AdminConstant))
+                            {
+                                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition" asp-controller="Product" asp-action="Index">Products</a>
+                            }
+                            
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition" asp-area="" asp-controller="Order" asp-action="GetOrderHistory">History</a>
+                            }
+                            @if (User.IsInRole(DataConstants.AdminConstant))
+                            {
+                                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition" asp-area="Admin" asp-controller="Product" asp-action="GetAllProductsAdmin">Admin Portal Products</a>
+                                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition" asp-area="Admin" asp-controller="Category" asp-action="GetAllCategories">All Categories</a>
+                            }
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <a asp-area="" asp-controller="Cart" asp-action="Index" class="relative inline-flex items-center px-3 py-2 rounded-md border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-100 transition">🛒</a>
+                        <partial name="_LoginPartial" />
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - IS_Task - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        @RenderBody()
+    </main>
+
+    <footer class="border-t border-gray-200 bg-white mt-auto">
+        <div class="max-w-7xl mx-auto px-4 py-4 text-sm text-gray-500">
+            &copy; 2026 - IS_Task &mdash;
+            <a class="hover:underline" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @* <script src="https://cdn.tailwindcss.com"></script> *@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
