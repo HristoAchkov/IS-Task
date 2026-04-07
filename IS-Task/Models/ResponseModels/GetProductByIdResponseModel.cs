@@ -1,10 +1,8 @@
-﻿using IS_Task.Shared.Constants;
-using IS_Task.Shared.Enums;
-using System.ComponentModel.DataAnnotations;
+﻿using IS_Task.Shared.Enums;
 
 namespace IS_Task.Models.ResponseModels
 {
-    public class GetAllProductsResponseModel
+    public class GetProductByIdResponseModel
     {
         public long Id { get; set; }
         public string Name { get; set; } = string.Empty;
