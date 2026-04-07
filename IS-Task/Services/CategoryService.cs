@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
+using IS_Task.Areas.Admin.Models.RequestModels;
+using IS_Task.Areas.Admin.Models.ResponseModels;
 using IS_Task.Data;
 using IS_Task.Data.Entities;
 using IS_Task.Interfaces;
-using IS_Task.Models.RequestModels;
 using IS_Task.Models.ResponseModels;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
@@ -13,18 +14,12 @@ namespace IS_Task.Services
         ApplicationDbContext dbContext,
         IMapper mapper) : ICategoryService
     {
-        public async Task<int> CreateCategory(CreateCategoryModel categoryModel)
+        public async Task CreateCategory(CreateCategoryModel categoryModel)
         {
-            Category category = new Category()
-            {
-                Name = categoryModel.Name,
-                Description = categoryModel.Description
-            };
+            var category = mapper.Map<Category>(categoryModel);
 
             await dbContext.Categories.AddAsync(category);
             await dbContext.SaveChangesAsync();
-
-            return 1;
         }
 
         public async Task<List<GetAllCategoriesResponseModel>> GetAllCategories()
