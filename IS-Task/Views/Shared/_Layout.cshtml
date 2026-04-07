@@ -19,7 +19,7 @@
                             <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                             @if (!User.IsInRole(DataConstants.AdminConstant))
                             {
-                                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition" asp-controller="Product" asp-action="Index">Products</a>
+                                <a class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition" asp-area="" asp-controller="Product" asp-action="Index">Products</a>
                             }
                             
                             @if (User.Identity.IsAuthenticated)
